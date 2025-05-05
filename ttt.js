@@ -1,11 +1,11 @@
 function createPlayer (character) {
-  const makeMove = function () {
-    let i = prompt("Your move row: ");
-    let j = prompt("Your move col: ");
-    if (i < 1 || i > 3 || j < 1 || j > 3) {
-      return makeMove();
-    }
-    return [Number(i), Number(j)];
+  const makeMove = function (x, y) {
+    let i = x;
+    let j = y;
+    // if (i < 1 || i > 3 || j < 1 || j > 3) {
+    //   return makeMove();
+    // }
+    return [i, j];
   };
 
   return {character, makeMove};
@@ -20,9 +20,10 @@ const gameBoard = (function () {
   const playMove = function (player, move) {
     if (board[move[0]-1][move[1]-1] === "") {
       board[move[0]-1][move[1]-1] = player.character;
-    } else {
-      playMove(player, player.makeMove());
     }
+    //  else {
+    //   playMove(player, player.makeMove());
+    // }
 
   };
 
@@ -62,6 +63,7 @@ const gameBoard = (function () {
     return false;
   }
 
+
   
   const checkTie = function () {
     for (row of board) {
@@ -77,17 +79,12 @@ const gameBoard = (function () {
   return {board, playMove, showBoard, checkWin, checkTie};
 })();
 
-const displayCards = document.querySelectorAll(".card");
-
-const populateWindow = function () {
+const populateWindow = function (cards) {
+  const displayCards = document.querySelectorAll(".card");
   let currentIndex = 0;
-  for (card of displayCards) {
-    card.textContent = "H";
-  }
   for (row of gameBoard.board) {
     for (spot of row) {
-      console.log(spot);
-      document.querySelectorAll(".card")[currentIndex].textContent = spot;
+      displayCards[currentIndex].textContent = spot;
       currentIndex++;
     }
   }
@@ -100,17 +97,17 @@ const game = function () {
     currentPlayer = (currentPlayer === xPlayer) ? oPlayer : xPlayer;
   };
 
-  const playRound = function () {
-    gameBoard.showBoard();
-    let move = currentPlayer.makeMove();
-    gameBoard.playMove(currentPlayer, move);
+  const playRound = function (x, y) {
     populateWindow();
+    gameBoard.showBoard();
+    const move = currentPlayer.makeMove(x, y);
+    gameBoard.playMove(currentPlayer, move);
     // console.log(displayCards[move[0] + move[1]])
     // setTimeout(populateWindow, 10);
   };
 
   const finalMessage = function () {
-    gameBoard.showBoard();
+    gameBoard.showBoard(); 
     if (gameBoard.checkTie() === true) {
       console.log("This game was a tie!")
     } else {
@@ -122,17 +119,29 @@ const game = function () {
   const playGame = function () {
     // populateWindow();
     let endFlag = false;
-    while (endFlag === false) {
-      playRound();
+    let times = 0;
+    let x = 1;
+    let y = 1;
+    while (endFlag === false && times < 9) {
+      playRound(x, y);
       endFlag = (gameBoard.checkWin(currentPlayer.character) || gameBoard.checkTie());
       togglePlayer();
+      times++;
+      y++;
+      if (times == 3) {
+        x++;
+        y = 0;
+      }
+      if (times == 6) {
+        x++;
+        y = 0;
+      }
     };
     finalMessage();
   };
 
   return {playGame};
 };
-
 // x = game();
 // x.playGame();
 
