@@ -18,7 +18,12 @@ const gameBoard = (function () {
   const board = [["", "", ""], ["", "", ""], ["", "", ""]];
 
   const playMove = function (player, move) {
-    board[move[0]-1][move[1]-1] = player;
+    if (board[move[0]-1][move[1]-1] === "") {
+      board[move[0]-1][move[1]-1] = player.character;
+    } else {
+      playMove(player, player.makeMove());
+    }
+
   };
 
   const showBoard = function () {
@@ -71,9 +76,17 @@ const gameBoard = (function () {
 
 const displayCards = document.querySelectorAll(".card");
 
-const populateWindow = function (character, move) {
-  let spot = move[0] + move[1];
-  displayCards[].textContent = character;
+const populateWindow = function () {
+  let currentIndex = 0;
+  for (card of displayCards) {
+    card.textContent = "H";
+  }
+  // for (row of gameBoard.showBoard()) {
+  //   for (spot of row) {
+  //     displayCards[currentIndex].textContent = spot;
+  //     currentIndex++;
+  //   }
+  // }
 };
 
 const game = function () {
@@ -86,8 +99,10 @@ const game = function () {
   const playRound = function () {
     gameBoard.showBoard();
     let move = currentPlayer.makeMove();
-    gameBoard.playMove(currentPlayer.character, move);
-    populateWindow(currentPlayer.character, move);
+    gameBoard.playMove(currentPlayer, move);
+    populateWindow();
+    // console.log(displayCards[move[0] + move[1]])
+    // setTimeout(populateWindow, 10);
   };
 
   const finalMessage = function () {
