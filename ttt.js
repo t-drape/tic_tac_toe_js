@@ -18,8 +18,8 @@ const gameBoard = (function () {
   const board = [["", "", ""], ["", "", ""], ["", "", ""]];
 
   const playMove = function (player, move) {
-    if (board[move[0]-1][move[1]-1] === "") {
-      board[move[0]-1][move[1]-1] = player.character;
+    if (board[move[0]][move[1]] === "") {
+      board[move[0]][move[1]] = player.character;
     }
     //  else {
     //   playMove(player, player.makeMove());
@@ -79,8 +79,9 @@ const gameBoard = (function () {
   return {board, playMove, showBoard, checkWin, checkTie};
 })();
 
+const displayCards = document.querySelectorAll(".card");
+
 const populateWindow = function (cards) {
-  const displayCards = document.querySelectorAll(".card");
   let currentIndex = 0;
   for (row of gameBoard.board) {
     for (spot of row) {
@@ -100,7 +101,7 @@ const game = function () {
   const playRound = function (x, y) {
     populateWindow();
     gameBoard.showBoard();
-    const move = currentPlayer.makeMove(x, y);
+    const move = currentPlayer.makeMove(x,y);
     gameBoard.playMove(currentPlayer, move);
     // console.log(displayCards[move[0] + move[1]])
     // setTimeout(populateWindow, 10);
@@ -112,7 +113,7 @@ const game = function () {
     if (gameBoard.checkTie() === true) {
       console.log("This game was a tie!")
     } else {
-      togglePlayer();
+      // togglePlayer();
       console.log("The winner is: ", currentPlayer.character + "!");
     };
   };
@@ -123,7 +124,7 @@ const game = function () {
     let times = 0;
     let x = 1;
     let y = 1;
-    while (endFlag === false && times < 9) {
+    while (endFlag === false) {
       playRound(x, y);
       endFlag = (gameBoard.checkWin(currentPlayer.character) || gameBoard.checkTie());
       togglePlayer();
@@ -141,8 +142,39 @@ const game = function () {
     finalMessage();
   };
 
+  const play = function (event) {
+    let id = Number(event.target.id);
+    let i = 0;
+    let j = 0;
+    if (event.target.textContent !== "") {
+      alert("Please choose an open square!");
+      return false;
+    } else {
+      if (id > 6) {
+        i = 2;
+      } else if (id > 3) {
+        i = 1;
+      }
+      j = id - (3*i) - 1;
+      gameBoard.playMove(currentPlayer, [i, j]);
+      event.target.textContent = currentPlayer.character;
+      if (gameBoard.checkWin(currentPlayer.character) || gameBoard.checkTie()) {
+        finalMessage();
+      };
+
+      togglePlayer();
+      return true;
+    }
+  }
+  
+  for (card of displayCards) {
+    card.addEventListener("click", play);
+  }
+
   return {playGame};
 };
+
+
 // x = game();
 // x.playGame();
 
