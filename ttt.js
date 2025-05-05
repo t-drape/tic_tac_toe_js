@@ -57,6 +57,7 @@ const gameBoard = (function () {
     return false;
   }
 
+  
   const checkTie = function () {
     noSpots = false;
     for (row of board) {
@@ -65,10 +66,17 @@ const gameBoard = (function () {
     return noSpots;
   }
 
-  return {playMove, showBoard, checkWin, checkTie};
+  return {board, playMove, showBoard, checkWin, checkTie};
 })();
 
-function game () {
+const displayCards = document.querySelectorAll(".card");
+
+const populateWindow = function (character, move) {
+  let spot = move[0] + move[1];
+  displayCards[].textContent = character;
+};
+
+const game = function () {
   let currentPlayer = xPlayer;
 
   const togglePlayer = function () {
@@ -77,20 +85,23 @@ function game () {
 
   const playRound = function () {
     gameBoard.showBoard();
-    gameBoard.playMove(currentPlayer.character, currentPlayer.makeMove());
+    let move = currentPlayer.makeMove();
+    gameBoard.playMove(currentPlayer.character, move);
+    populateWindow(currentPlayer.character, move);
   };
 
   const finalMessage = function () {
+    gameBoard.showBoard();
     if (gameBoard.checkTie() === true) {
       console.log("This game was a tie!")
     } else {
       togglePlayer();
-      gameBoard.showBoard();
       console.log("The winner is: ", currentPlayer.character + "!");
     };
   };
 
   const playGame = function () {
+    // populateWindow();
     let endFlag = false;
     while (endFlag === false) {
       playRound();
@@ -101,18 +112,10 @@ function game () {
   };
 
   return {playGame};
-
-
-  // Play game while gameBoard.checkWin === false
-  // Play Round
-  // Each round consists of:
-  // Showing Board,
-  // Choosing play,
-  // Switching Player
 };
 
-x = game();
-x.playGame();
+// x = game();
+// x.playGame();
 
 // me = createPlayer("x");
 // gameBoard.playMove(me.character, me.makeMove());

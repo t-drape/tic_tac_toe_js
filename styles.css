@@ -1,0 +1,22 @@
+.game {
+  width: 600px;
+  height: 600PX;
+  background-color: black;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  column-gap: 15px;
+  row-gap: 15px;
+}
+
+.card {
+  background-color: orange;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 72px;
+}
+
+.card p {
+  font-size: 72px;
+}
