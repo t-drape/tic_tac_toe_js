@@ -107,6 +107,7 @@ const game = function () {
   };
 
   const finalMessage = function () {
+    populateWindow();
     gameBoard.showBoard(); 
     if (gameBoard.checkTie() === true) {
       console.log("This game was a tie!")
@@ -130,11 +131,11 @@ const game = function () {
       y++;
       if (times == 3) {
         x++;
-        y = 0;
+        y = 1;
       }
       if (times == 6) {
         x++;
-        y = 0;
+        y = 1;
       }
     };
     finalMessage();
