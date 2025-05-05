@@ -1,3 +1,10 @@
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
 .game {
   width: 600px;
   height: 600PX;
@@ -19,4 +26,8 @@
 
 .card p {
   font-size: 72px;
+}
+
+.clicked {
+  display: none;
 }

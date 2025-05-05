@@ -14,6 +14,18 @@ function createPlayer (character) {
 const xPlayer = createPlayer("X");
 const oPlayer = createPlayer("O");
 
+const displayCards = document.querySelectorAll(".card");
+
+const populateWindow = function (cards) {
+  let currentIndex = 0;
+  for (row of gameBoard.board) {
+    for (spot of row) {
+      displayCards[currentIndex].textContent = spot;
+      currentIndex++;
+    }
+  }
+};
+
 const gameBoard = (function () {
   const board = [["", "", ""], ["", "", ""], ["", "", ""]];
 
@@ -79,70 +91,67 @@ const gameBoard = (function () {
   return {board, playMove, showBoard, checkWin, checkTie};
 })();
 
-const displayCards = document.querySelectorAll(".card");
-
-const populateWindow = function (cards) {
-  let currentIndex = 0;
-  for (row of gameBoard.board) {
-    for (spot of row) {
-      displayCards[currentIndex].textContent = spot;
-      currentIndex++;
-    }
-  }
-};
-
 const game = function () {
   let currentPlayer = xPlayer;
+
 
   const togglePlayer = function () {
     currentPlayer = (currentPlayer === xPlayer) ? oPlayer : xPlayer;
   };
 
-  const playRound = function (x, y) {
-    populateWindow();
-    gameBoard.showBoard();
-    const move = currentPlayer.makeMove(x,y);
-    gameBoard.playMove(currentPlayer, move);
-    // console.log(displayCards[move[0] + move[1]])
-    // setTimeout(populateWindow, 10);
-  };
+  // const playRound = function (x, y) {
+  //   populateWindow();
+  //   gameBoard.showBoard();
+  //   const move = currentPlayer.makeMove(x,y);
+  //   gameBoard.playMove(currentPlayer, move);
+  //   // console.log(displayCards[move[0] + move[1]])
+  //   // setTimeout(populateWindow, 10);
+  // };
 
   const finalMessage = function () {
     populateWindow();
+    const display = document.querySelector(".display");
     gameBoard.showBoard(); 
-    if (gameBoard.checkTie() === true) {
-      console.log("This game was a tie!")
+    if (!gameBoard.checkWin(currentPlayer.character)) {
+      display.textContent = "This game was a tie!";
     } else {
       // togglePlayer();
-      console.log("The winner is: ", currentPlayer.character + "!");
+      display.textContent = "The winner is: " + currentPlayer.character + "!";
     };
   };
 
-  const playGame = function () {
-    // populateWindow();
-    let endFlag = false;
-    let times = 0;
-    let x = 1;
-    let y = 1;
-    while (endFlag === false) {
-      playRound(x, y);
-      endFlag = (gameBoard.checkWin(currentPlayer.character) || gameBoard.checkTie());
-      togglePlayer();
-      times++;
-      y++;
-      if (times == 3) {
-        x++;
-        y = 1;
-      }
-      if (times == 6) {
-        x++;
-        y = 1;
-      }
-    };
-    finalMessage();
-  };
+  // const playGame = function () {
+  //   // populateWindow();
+  //   let endFlag = false;
+  //   let times = 0;
+  //   let x = 1;
+  //   let y = 1;
+  //   while (endFlag === false) {
+  //     playRound(x, y);
+  //     endFlag = (gameBoard.checkWin(currentPlayer.character) || gameBoard.checkTie());
+  //     togglePlayer();
+  //     times++;
+  //     y++;
+  //     if (times == 3) {
+  //       x++;
+  //       y = 1;
+  //     }
+  //     if (times == 6) {
+  //       x++;
+  //       y = 1;
+  //     }
+  //   };
+  //   finalMessage();
+  // };
 
-  const play = function (event) {
+  const endGame = function () {
+    for (card of displayCards) {
+      card.removeEventListener("click", playRound);
+    }
+    document.querySelector(".play-button").classList.toggle("clicked");
+  }
+
+  const playRound = function (event) {
     let id = Number(event.target.id);
     let i = 0;
     let j = 0;
@@ -160,19 +169,39 @@ const game = function () {
       event.target.textContent = currentPlayer.character;
       if (gameBoard.checkWin(currentPlayer.character) || gameBoard.checkTie()) {
         finalMessage();
+        endGame();
       };
 
       togglePlayer();
-      return true;
     }
   }
   
   for (card of displayCards) {
-    card.addEventListener("click", play);
+    card.addEventListener("click", playRound);
   }
 
   return {playGame};
 };
+
+const toggleGame = function (e) {
+  e.target.classList.toggle("clicked");
+  document.querySelector(".game").classList.toggle("clicked");
+  if (!document.querySelector(".game").classList.contains("clicked")) {
+    alert("X goes first!");
+    game();
+  } else {
+    document.querySelector(".game").classList.toggle("clicked");
+    document.querySelector(".display").textContent = "";
+    alert("X goes first!");
+    game();
+  }
+
+}
+
+const playButton = document.querySelector(".play-button");
+playButton.addEventListener("click", toggleGame);
+// const newGameButton = document.querySelector("new-game");
+// newGameButton.addEventListener("click", newGame);
 
 
 // x = game();
