@@ -64,11 +64,14 @@ const gameBoard = (function () {
 
   
   const checkTie = function () {
-    noSpots = false;
     for (row of board) {
-      noSpots = row.every(spot => spot !== '');
+      for (col of row) {
+        if (col === "") {
+          return false
+        }
+      }
     }
-    return noSpots;
+    return true;
   }
 
   return {board, playMove, showBoard, checkWin, checkTie};
@@ -81,12 +84,13 @@ const populateWindow = function () {
   for (card of displayCards) {
     card.textContent = "H";
   }
-  // for (row of gameBoard.showBoard()) {
-  //   for (spot of row) {
-  //     displayCards[currentIndex].textContent = spot;
-  //     currentIndex++;
-  //   }
-  // }
+  for (row of gameBoard.board) {
+    for (spot of row) {
+      console.log(spot);
+      document.querySelectorAll(".card")[currentIndex].textContent = spot;
+      currentIndex++;
+    }
+  }
 };
 
 const game = function () {
