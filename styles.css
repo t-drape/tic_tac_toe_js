@@ -24,10 +24,52 @@ body {
   font-size: 72px;
 }
 
-.card p {
-  font-size: 72px;
-}
-
 /* .clicked {
   display: none;
 } */
+
+.no-show {
+  opacity: 0;
+}
+
+button {
+  width: 300px;
+  font-size: 46px;
+  align-self: center;
+}
+
+p {
+  font-size: 46px;
+}
+
+.ani {
+  animation-duration: 2s;
+  animation-name: fade;
+}
+
+form {
+  width: 500px;
+  display: flex;
+  flex-direction: column;
+}
+
+.inputs {
+  margin-top: 30px;
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.none {
+  display: none;
+}
+
+@keyframes fade {
+  from {
+    opacity: 100;
+  }
+
+  to {
+    opacity: 0;
+  }
+}

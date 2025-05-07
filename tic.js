@@ -1,25 +1,29 @@
-function createPlayer(identifier) {
+function createPlayer(identifier, myName) {
   const character = identifier;
+  const name = myName;
 
-  const makeMove = function (x, y) {
+  const makeMove = function (target) {
     // This should get input from the user
-    return [x, y];
+    return target.id.split(",").map(Number);
   }
 
   const getCharacter = () => character;
+  const getName = () => name;
 
   // Don't expose character, since it could change outside of function
-  return {makeMove, getCharacter}
+  return {makeMove, getCharacter, getName};
 }
 
-const game = function () {
-  const xPlayer = createPlayer("X");
-  const oPlayer = createPlayer("O");
+const game = function (name1, name2) {
+  const xPlayer = createPlayer("X", name1);
+  const oPlayer = createPlayer("O", name2);
 
   let currentPlayer = xPlayer;
 
-  let moveRow = 0;
-  let moveCol = 0;
+  // let moveRow = 0;
+  // let moveCol = 0;
+
+  let gameOver = false;
 
   const gameBoard = (function () {
     const board = [["", "", ""], ["", "", ""], ["", "", ""]];
@@ -84,6 +88,13 @@ const game = function () {
 
   const displayController = (function () {
     const displayCards = document.querySelectorAll(".card");
+    const endMessage = document.querySelector(".message");
+
+    const makeClickable = function () {
+      for (card of displayCards) {
+        card.addEventListener("click", playRound);
+      }
+    }
 
     const populateCards = function () {
       let currentIndex = 0;
@@ -95,7 +106,24 @@ const game = function () {
       }
     }
 
-    return {populateCards};
+    const resetCards = function () {
+      for (card of displayCards) {
+        card.textContent = "";
+      }
+      endMessage.classList.toggle("no-show");
+    }
+
+    const showMessage = function (message) {
+      endMessage.classList.toggle("no-show");
+      endMessage.textContent = message;
+    }
+
+    const showErrorMessage = function (message) {
+      endMessage.textContent = message;
+      endMessage.classList.toggle("ani");
+    }
+
+    return {populateCards, makeClickable, showMessage, resetCards, showErrorMessage};
   })();
 
   const showPlayer = () => currentPlayer.getCharacter();
@@ -104,53 +132,60 @@ const game = function () {
 
   const finalMessage = function (character) {
     if (character) {
-      console.log("THE WINNER IS: " + character + "!");
+      return "THE WINNER IS: " + character + "!";
     } else {
-      console.log("THIS GAME WAS A TIE!");
+      return "THIS GAME WAS A TIE!";
     }
   } 
 
   const endGame = function () {
     if (gameBoard.checkWin(currentPlayer.getCharacter())) {
-      finalMessage(currentPlayer.getCharacter());
+      displayController.showMessage(finalMessage(currentPlayer.getName()));
       return true;
     } else if (gameBoard.checkTie()) {
-      finalMessage();
+      displayController.showMessage(finalMessage());
       return true;
     } else {
       return false;
     }
   }
 
-  const playRound = function () {
+  const playRound = function (event) {
+    if (gameOver) return;
     // Call Current player choose move
-    let move = currentPlayer.makeMove(moveRow, moveCol);
+    let move = currentPlayer.makeMove(event.target);
     // Reflect move in game board array
     if (gameBoard.playMove(currentPlayer.getCharacter(), move)) {
-      moveCol++;
+      // moveCol++;
       displayController.populateCards();
-      return endGame();
+      gameOver = endGame();
+      togglePlayer();
+      
     } else {
-      console.log("Please enter valid move!");
-      playRound();
+      displayController.showErrorMessage("Please enter valid move!");
+      // playRound();
     }
     // Check if move ended game
     // Remove this
   }
 
   const playGame = function () {
-    while (playRound() === false) {
-      if (moveCol == 3 || moveCol == 6) {
-        moveRow++;
-        moveCol = 0;
-      }
-      if (moveRow == 3) {
-        moveRow = 0;
-      }
-      // Switch to other player
-      togglePlayer();
-    }
+    displayController.resetCards();
+    displayController.makeClickable();
   }
 
-  return {gameBoard, togglePlayer, showPlayer, playGame};
+  return {gameBoard, displayController, gameOver, togglePlayer, showPlayer, playGame};
 }
+
+
+const playNew = function (event) {
+  event.preventDefault();
+  const data = new FormData(form);
+  newGame = game(data.get("name1"), data.get("name2"));
+  newGame.playGame();
+  form.reset();
+  form.classList.toggle('.none');
+}
+
+const form = document.querySelector("form");
+form.addEventListener("submit", playNew);

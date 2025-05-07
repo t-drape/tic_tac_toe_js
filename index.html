@@ -9,17 +9,31 @@
 </head>
 <body>
   <div class="game clicked">
-    <div id="1" class="card"></div>
-    <div id="2" class="card"></div>
-    <div id="3" class="card"></div>
-    <div id="4" class="card"></div>
-    <div id="5" class="card"></div>
-    <div id="6" class="card"></div>
-    <div id="7" class="card"></div>
-    <div id="8" class="card"></div>
-    <div id="9" class="card"></div>
+    <div id="0,0" class="card"></div>
+    <div id="0,1" class="card"></div>
+    <div id="0,2" class="card"></div>
+    <div id="1,0" class="card"></div>
+    <div id="1,1" class="card"></div>
+    <div id="1,2" class="card"></div>
+    <div id="2,0" class="card"></div>
+    <div id="2,1" class="card"></div>
+    <div id="2,2" class="card"></div>
   </div>
-  <button class="play-button">Play Game</button>
-  <p class="display"></p>
+  <p class="message">Play Game to Get Started</p>
+  <form>
+    <button type="submit" class="play">Play Game</button>
+    <div class="inputs">
+      <div>
+        <label for="name1">Player One:</label>
+        <input name="name1" id="name1" type="text" placeholder="X" required>
+      </div>
+      <div>
+        <label for="name2">Player Two:</label>
+        <input name="name2" id="name2" type="text" placeholder="O" required>
+      </div>
+    </div>
+  </form>
+  <!-- <button class="play-button">Play Game</button>
+  <p class="display"></p> -->
 </body>
 </html>
