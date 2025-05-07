@@ -14,75 +14,76 @@ function createPlayer (character) {
 const xPlayer = createPlayer("X");
 const oPlayer = createPlayer("O");
 
+const gameBoard = (function () {
+  const board = [["", "", ""], ["", "", ""], ["", "", ""]];
+
+  const playMove = function (player, move) {
+    if (board[move[0]][move[1]] === "") {
+      board[move[0]][move[1]] = player.character;
+    }
+    //  else {
+    //   playMove(player, player.makeMove());
+    // }
+
+  };
+
+  const showBoard = function () {
+    for (row of board) {
+      console.log(row);
+    };
+  };
+
+  const transposeBoard = function () {
+    return board[0].map((_, colIndex) => 
+    board.map(row => row[colIndex]));
+  };
+
+  const checkWin = function (player) {
+    // All rows
+    for (row of board) {
+      if (row.every(value => value === player) === true) {
+        return true;
+      }
+    }
+    // All Diagonals
+    for (row of transposeBoard()) {
+      if (row.every(value => value === player) === true) {
+        return true;
+      }
+    }
+    // Diagonal
+    if (board[0][0] === player && board[1][1] === player && board[2][2] === player) {
+      return true;
+    };
+    // Anti-Diagonal
+    if (board[2][0] === player && board[1][1] === player && board[0][2] === player) {
+      return true;
+    };
+    return false;
+  }
+  
+  const checkTie = function () {
+    for (row of board) {
+      for (col of row) {
+        if (col === "") {
+          return false
+        }
+      }
+    }
+    return true;
+  }
+
+  // const resetBoard = function () {
+  //   board = [["", "", ""], ["", "", ""], ["", "", ""]];
+  // }
+
+  return {board, playMove, showBoard, checkWin, checkTie};
+})();
+
 const displayCards = document.querySelectorAll(".card");
 
 const game = function () {
   let currentPlayer = xPlayer;
-
-  const gameBoard = (function () {
-    const board = [["", "", ""], ["", "", ""], ["", "", ""]];
-  
-    const playMove = function (player, move) {
-      if (board[move[0]][move[1]] === "") {
-        board[move[0]][move[1]] = player.character;
-      }
-      //  else {
-      //   playMove(player, player.makeMove());
-      // }
-  
-    };
-  
-    const showBoard = function () {
-      for (row of board) {
-        console.log(row);
-      };
-    };
-  
-    const transposeBoard = function () {
-      return board[0].map((_, colIndex) => 
-      board.map(row => row[colIndex]));
-    };
-  
-    const checkWin = function (player) {
-      // All rows
-      for (row of board) {
-        if (row.every(value => value === player) === true) {
-          return true;
-        }
-      }
-      // All Diagonals
-      for (row of transposeBoard()) {
-        if (row.every(value => value === player) === true) {
-          return true;
-        }
-      }
-      // Diagonal
-      if (board[0][0] === player && board[1][1] === player && board[2][2] === player) {
-        return true;
-      };
-      // Anti-Diagonal
-      if (board[2][0] === player && board[1][1] === player && board[0][2] === player) {
-        return true;
-      };
-  
-      return false;
-    }
-  
-  
-    
-    const checkTie = function () {
-      for (row of board) {
-        for (col of row) {
-          if (col === "") {
-            return false
-          }
-        }
-      }
-      return true;
-    }
-  
-    return {board, playMove, showBoard, checkWin, checkTie};
-  })();
 
 
   const togglePlayer = function () {
@@ -139,6 +140,7 @@ const game = function () {
       card.removeEventListener("click", playRound);
     }
     document.querySelector(".play-button").classList.toggle("clicked");
+    gameBoard.resetBoard();
   }
 
   const playRound = function (event) {
@@ -166,22 +168,30 @@ const game = function () {
     }
   }
 
-  const populateWindow = function () {
-    let currentIndex = 0;
-    for (row of gameBoard.board) {
-      for (spot of row) {
-        displayCards[currentIndex].textContent = spot;
-        currentIndex++;
-      }
-    }
-  };
-  
   for (card of displayCards) {
     card.addEventListener("click", playRound);
   }
 
   return {playGame};
+
+  
 };
+
+const populateWindow = function () {
+  let currentIndex = 0;
+  for (row of gameBoard.board) {
+    for (spot of row) {
+      displayCards[currentIndex].textContent = spot;
+      currentIndex++;
+    }
+  }
+};
+
+const clearBoard = function () {
+  for (card of displayCards) {
+    card.textContent = "";
+  }
+}
 
 const toggleGame = function (e) {
   e.target.classList.toggle("clicked");
@@ -193,6 +203,8 @@ const toggleGame = function (e) {
     document.querySelector(".game").classList.toggle("clicked");
     document.querySelector(".display").textContent = "";
     alert("X goes first!");
+    clearBoard();
+    populateWindow();
     game();
   }
 
