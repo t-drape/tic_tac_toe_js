@@ -13,8 +13,8 @@ function createPlayer(identifier) {
 }
 
 const game = function () {
-  const xPlayer = createPlayer("x");
-  const oPlayer = createPlayer("o");
+  const xPlayer = createPlayer("X");
+  const oPlayer = createPlayer("O");
 
   let currentPlayer = xPlayer;
 
@@ -83,12 +83,20 @@ const game = function () {
 
   const togglePlayer = () => currentPlayer = (currentPlayer === xPlayer) ? oPlayer : xPlayer;
 
+  const finalMessage = function (character) {
+    if (character) {
+      console.log("THE WINNER IS: " + character + "!");
+    } else {
+      console.log("THIS GAME WAS A TIE!");
+    }
+  } 
+
   const endGame = function () {
     if (gameBoard.checkWin(currentPlayer.getCharacter())) {
-      // finalMessage(currentPlayer.getCharacter());
+      finalMessage(currentPlayer.getCharacter());
       return true;
     } else if (gameBoard.checkTie()) {
-      // finalMessage();
+      finalMessage();
       return true;
     } else {
       return false;
@@ -111,6 +119,9 @@ const game = function () {
       if (moveCol == 3 || moveCol == 6) {
         moveRow++;
         moveCol = 0;
+      }
+      if (moveRow == 3) {
+        moveRow = 0;
       }
       // Switch to other player
       togglePlayer();
