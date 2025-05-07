@@ -12,12 +12,14 @@ function createPlayer(identifier) {
   return {makeMove, getCharacter}
 }
 
-
 const game = function () {
   const xPlayer = createPlayer("x");
   const oPlayer = createPlayer("o");
 
   let currentPlayer = xPlayer;
+
+  let moveRow = 0;
+  let moveCol = 0;
 
   const gameBoard = (function () {
     const board = [["", "", ""], ["", "", ""], ["", "", ""]];
@@ -47,7 +49,6 @@ const game = function () {
         }
       }
       // All Diagonals
-      console.log(transposeBoard())
       for (row of transposeBoard()) {
         if (row.every(value => value === player) === true) {
           return true;
@@ -82,7 +83,41 @@ const game = function () {
 
   const togglePlayer = () => currentPlayer = (currentPlayer === xPlayer) ? oPlayer : xPlayer;
 
-  return {gameBoard, togglePlayer, showPlayer};
+  const endGame = function () {
+    if (gameBoard.checkWin(currentPlayer.getCharacter())) {
+      // finalMessage(currentPlayer.getCharacter());
+      return true;
+    } else if (gameBoard.checkTie()) {
+      // finalMessage();
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  const playRound = function () {
+    // Call Current player choose move
+    let move = currentPlayer.makeMove(moveRow, moveCol);
+    // Reflect move in game board array
+    gameBoard.playMove(currentPlayer.getCharacter(), move);
+    // Check if move ended game
+    // Remove this
+    moveCol++;
+    return endGame();
+  }
+
+  const playGame = function () {
+    while (playRound() === false) {
+      if (moveCol == 3 || moveCol == 6) {
+        moveRow++;
+        moveCol = 0;
+      }
+      // Switch to other player
+      togglePlayer();
+    }
+  }
+
+  return {gameBoard, togglePlayer, showPlayer, playGame};
 }
 
 const displayController = (function () {
