@@ -27,6 +27,9 @@ const game = function () {
     const playMove = function (player, move) {
       if (board[move[0]][move[1]] === "") {
         board[move[0]][move[1]] = player;
+        return true;
+      } else {
+        return false;
       }
     };
   
@@ -79,6 +82,22 @@ const game = function () {
     return {board, playMove, showBoard, checkWin, checkTie};
   })();
 
+  const displayController = (function () {
+    const displayCards = document.querySelectorAll(".card");
+
+    const populateCards = function () {
+      let currentIndex = 0;
+      for (row of gameBoard.board) {
+        for (cell of row) {
+          displayCards[currentIndex].textContent = cell;
+          currentIndex++;
+        }
+      }
+    }
+
+    return {populateCards};
+  })();
+
   const showPlayer = () => currentPlayer.getCharacter();
 
   const togglePlayer = () => currentPlayer = (currentPlayer === xPlayer) ? oPlayer : xPlayer;
@@ -107,11 +126,16 @@ const game = function () {
     // Call Current player choose move
     let move = currentPlayer.makeMove(moveRow, moveCol);
     // Reflect move in game board array
-    gameBoard.playMove(currentPlayer.getCharacter(), move);
+    if (gameBoard.playMove(currentPlayer.getCharacter(), move)) {
+      moveCol++;
+      displayController.populateCards();
+      return endGame();
+    } else {
+      console.log("Please enter valid move!");
+      playRound();
+    }
     // Check if move ended game
     // Remove this
-    moveCol++;
-    return endGame();
   }
 
   const playGame = function () {
@@ -130,7 +154,3 @@ const game = function () {
 
   return {gameBoard, togglePlayer, showPlayer, playGame};
 }
-
-const displayController = (function () {
-
-})();
